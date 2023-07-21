@@ -14,7 +14,8 @@ async function start(params) {
   document.querySelectorAll("img").forEach((image) => image.addEventListener("click", changeSort));
 }
 
-function changeLeague(event) {
+function changeLeague() {
+  console.log("change league");
   if (currentLeague === playerStatsLIHL) {
     currentLeague = playerStatsFBG;
   } else {
