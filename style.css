@@ -3,6 +3,17 @@ body {
   margin: 0;
 }
 
+header {
+  text-align: center;
+  font-size: 2em;
+}
+
+button {
+  padding: 12px 20px;
+  background-color: rgb(162, 203, 241);
+  border-radius: 10px 15px;
+}
+
 img {
   /* display: inline-block; */
   width: 20px;

@@ -2,35 +2,48 @@
 
 window.addEventListener("load", start);
 
-let playerStats;
+let playerStatsLIHL;
+let playerStatsFBG;
+let currentLeague;
 
 async function start(params) {
-  playerStats = await getStats();
-  console.log(playerStats);
-  //   playerStats.sort(sortByNumber).reverse();
-  console.log(playerStats);
-  showStats(playerStats);
-
+  await getStats();
+  currentLeague = playerStatsLIHL;
+  showStats(currentLeague);
+  document.querySelector("#swap").addEventListener("click", changeLeague);
   document.querySelectorAll("img").forEach((image) => image.addEventListener("click", changeSort));
 }
 
-async function getStats(params) {
-  const promise = await fetch("statsLIHL.json");
-  return promise.json();
+function changeLeague(event) {
+  if (currentLeague === playerStatsLIHL) {
+    currentLeague = playerStatsFBG;
+  } else {
+    currentLeague = playerStatsLIHL;
+  }
+  showStats();
 }
 
-function showStats(playerArray, id, arrowValue) {
+async function getStats() {
+  const promiseLIHL = await fetch("stats/statsLIHL.json");
+  playerStatsLIHL = await promiseLIHL.json();
+  const promiseFBG = await fetch("stats/statsFBG.json");
+  playerStatsFBG = await promiseFBG.json();
+}
+
+function showStats(id, arrowValue) {
+  console.log("current league:", currentLeague);
   const stats = document.querySelector("#playerStats");
   stats.innerHTML = "";
   let n;
+  console.log("arrow value", arrowValue);
   console.log("id", id);
   if (arrowValue === "images/arrowDown.png" && id !== "name") {
     console.log("@@@@@@@@@@@@@@@@@@");
-    n = playerArray.length;
+    n = currentLeague.length;
   } else {
     n = 1;
   }
-  for (const player of playerArray) {
+  for (const player of currentLeague) {
     if (id === "name") {
       n = player.rank;
     }
@@ -61,13 +74,6 @@ function changeSort(event) {
       image.src = "images/arrowBoth.png";
     }
   });
-  //   console.log("event target@@@@@", event.target);
-  //   console.log(event);
-  //   console.log(event.target.id);
-  //   console.log(event.target.attributes);
-  //   console.log(event.target.attributes[0]);
-  //   console.log(event.target.attributes[0].value);
-  //   console.log(event.target.attributes[0].value == "images/arrowBoth.png");
 
   const arrowValue = event.target.attributes[0].value;
   const imageToUpdate = document.querySelector(`#${event.target.id}`);
@@ -75,7 +81,7 @@ function changeSort(event) {
   const down = "images/arrowDown.png";
   const both = "images/arrowBoth.png";
   const id = event.target.id;
-  //   console.log(event.target);
+
   if (arrowValue == both || arrowValue == up) {
     console.log("check");
     imageToUpdate.src = down;
@@ -86,7 +92,7 @@ function changeSort(event) {
 
   document.querySelectorAll("img").forEach((image) => image.addEventListener("click", changeSort));
   doTheSorting(arrowValue, both, down, up, id);
-  showStats(playerStats, id, arrowValue);
+  showStats(id, arrowValue);
 
   //   const restOfTheArrows = document.querySelectorAll("img").
 }
@@ -97,16 +103,16 @@ function doTheSorting(arrowValue, both, down, up, id) {
   if (id === "name") {
     // console.log("sort by name");
     if (arrowValue === both || arrowValue === up) {
-      playerStats.sort(sortByLetter);
+      currentLeague.sort(sortByLetter);
     } else if (arrowValue === down) {
-      playerStats.sort(sortByLetter).reverse();
+      currentLeague.sort(sortByLetter).reverse();
     }
   } else if (arrowValue === down) {
     // console.log("number down");
-    playerStats.sort(sortByNumber);
+    currentLeague.sort(sortByNumber);
   } else {
     // console.log("number up");
-    playerStats.sort(sortByNumber).reverse();
+    currentLeague.sort(sortByNumber).reverse();
   }
   function sortByNumber(player1, player2) {
     return player1[id] - player2[id];
