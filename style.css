@@ -1,0 +1,52 @@
+body{
+    background-color: rgb(197, 109, 109);
+    margin: 0;
+}
+
+img{
+    /* display: inline-block; */
+    width: 20px;
+    height: 20px;
+    padding: 5px;
+    float:inline-end;
+    /* margin-top: 30px; */
+}
+
+img:hover{
+    cursor:pointer;
+}
+
+table{
+    text-align: center;
+    width: 80%;
+    font-size: 1.5em;
+    margin: 50px;
+    /* gap: 3px; */
+    /* border: 2px solid black; */
+    border-collapse: collapse;
+}
+
+tr{
+    margin: 20px;
+    /* border: 2px solid blue; */
+}
+
+th{
+    /* width: 10%; */
+    /* border-bottom: 2px solid black;
+    border-right: 2px solid black; */
+    border: 2px solid gainsboro;
+    margin: 30px;
+    padding: 15px;
+}
+
+td{
+    border:1.5px solid lightblue; ;
+    padding: 13px;
+    padding-left: 20px;
+    text-align: left;
+}
+
+#sources{
+    display: none;
+}
