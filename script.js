@@ -6,9 +6,9 @@ let playerStatsLIHL;
 let playerStatsFBG;
 let currentLeague;
 let filteredLeague;
-let sortBy;
+let sortBy = "rating"
 let filterValue = 0
-let arrowValue;
+let arrowValue = "images/arrowDown.png";
 let searchValue;
 
 async function start(params) {
@@ -150,7 +150,7 @@ function doTheSorting() {
     const up = "images/arrowUp.png";
     const down = "images/arrowDown.png";
     const both = "images/arrowBoth.png";
-    if (sortBy == undefined){sortBy = "rating"}
+    console.log(sortBy);
   console.log(arrowValue);
   if (sortBy === "name") {
     // console.log("sort by name");
