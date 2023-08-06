@@ -75,3 +75,9 @@ select {
   border-radius: 10px;
   font-size: 0.6em;
 }
+
+input{
+  background-color: rgb(187, 172, 172);
+  border-radius: 5px;
+  /* border: rgb(39, 36, 36) solid 1px; */
+}
