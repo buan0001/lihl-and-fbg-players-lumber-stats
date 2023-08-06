@@ -6,6 +6,9 @@ let playerStatsLIHL;
 let playerStatsFBG;
 let currentLeague;
 let filteredLeague;
+let sortBy;
+let filterValue = 0
+let arrowValue;
 
 async function start(params) {
   await getStats();
@@ -17,27 +20,38 @@ async function start(params) {
   document.querySelectorAll("img").forEach((image) => image.addEventListener("click", changeSort));
 }
 
+
 function changeFilter(event) {
   console.log(event.target.value);
-  const value = event.target.value;
-  filteredLeague = currentLeague.filter((player) => player.games >= value);
-  resetArrows();
-  showStats("rating");
+  filterValue = event.target.value;
+
+  filteredLeague = currentLeague.filter(applyFilter)
+  // resetArrows();
+  doTheSorting()
+  showStats();
+}
+
+function applyFilter(player) {
+  return player.games >= filterValue;
 }
 
 function changeLeague() {
   console.log("change league");
   if (currentLeague === playerStatsLIHL) {
-    currentLeague = playerStatsFBG;
+    currentLeague = playerStatsFBG
+    filteredLeague = playerStatsFBG.filter(applyFilter);
   } else {
-    currentLeague = playerStatsLIHL;
+    currentLeague = playerStatsLIHL
+    filteredLeague = playerStatsLIHL.filter(applyFilter);
   }
-  doTheSorting("x", "x", "Y", "x", "rating");
-  resetArrows();
-  showStats("rating");
+  console.log("filtered league:",filteredLeague);
+  doTheSorting();
+  // resetArrows();
+  showStats();
 }
 
 function resetArrows(params) {
+  sortBy = undefined
   document.querySelectorAll("img").forEach((image) => image.addEventListener("click", changeSort));
   document.querySelectorAll("img").forEach((image) => (image.src = "images/arrowBoth.png"));
 }
@@ -49,21 +63,21 @@ async function getStats() {
   playerStatsFBG = await promiseFBG.json();
 }
 
-function showStats(id, arrowValue) {
-  console.log("current league:", filteredLeague);
+function showStats() {
+  // console.log("current league:", filteredLeague);
   const stats = document.querySelector("#playerStats");
   stats.innerHTML = "";
   let n;
   console.log("arrow value", arrowValue);
-  console.log("id", id);
-  if (arrowValue === "images/arrowDown.png" && id !== "name") {
-    console.log("@@@@@@@@@@@@@@@@@@");
+  // console.log("id", sortBy);
+  if (arrowValue === "images/arrowDown.png" && sortBy !== "name") {
+    // console.log("@@@@@@@@@@@@@@@@@@");
     n = filteredLeague.length;
   } else {
     n = 1;
   }
   for (const player of filteredLeague) {
-    if (id === "name") {
+    if (sortBy === "name") {
       n = player.rank;
     }
     const html =
@@ -95,32 +109,36 @@ function changeSort(event) {
     }
   });
 
-  const arrowValue = event.target.attributes[0].value;
+  arrowValue = event.target.attributes[0].value;
   const imageToUpdate = document.querySelector(`#${event.target.id}`);
   const up = "images/arrowUp.png";
   const down = "images/arrowDown.png";
   const both = "images/arrowBoth.png";
-  const id = event.target.id;
+  sortBy = event.target.id;
 
   if (arrowValue == both || arrowValue == up) {
-    console.log("check");
+    arrowValue = down
     imageToUpdate.src = down;
   } else if (arrowValue == down) {
-    console.log("check 2");
     imageToUpdate.src = up;
+    arrowValue = up
   }
 
   document.querySelectorAll("img").forEach((image) => image.addEventListener("click", changeSort));
-  doTheSorting(arrowValue, both, down, up, id);
-  showStats(id, arrowValue);
+  doTheSorting();
+  showStats();
 
   //   const restOfTheArrows = document.querySelectorAll("img").
 }
 
-function doTheSorting(arrowValue, both, down, up, id) {
-  console.log("do the sorting");
-  console.log(arrowValue);
-  if (id === "name") {
+function doTheSorting() {
+  // console.log("do the sorting");
+    const up = "images/arrowUp.png";
+    const down = "images/arrowDown.png";
+    const both = "images/arrowBoth.png";
+    if (sortBy == undefined){sortBy = "rating"}
+  // console.log(arrowValue);
+  if (sortBy === "name") {
     // console.log("sort by name");
     if (arrowValue === both || arrowValue === up) {
       filteredLeague.sort(sortByLetter);
@@ -128,7 +146,7 @@ function doTheSorting(arrowValue, both, down, up, id) {
       filteredLeague.sort(sortByLetter).reverse();
     }
   } else if (arrowValue === down) {
-    console.log("checkasdfjasdfasd@@@");
+    // console.log("checkasdfjasdfasd@@@");
     // console.log("number down");
     filteredLeague.sort(sortByNumber);
   } else {
@@ -136,7 +154,7 @@ function doTheSorting(arrowValue, both, down, up, id) {
     filteredLeague.sort(sortByNumber).reverse();
   }
   function sortByNumber(player1, player2) {
-    return player1[id] - player2[id];
+    return player1[sortBy] - player2[sortBy];
   }
 
   function sortByLetter(player1, player2) {
