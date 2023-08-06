@@ -1,6 +1,7 @@
 body {
   background-color: rgb(197, 109, 109);
   margin: 0;
+  font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
 header {
@@ -9,6 +10,7 @@ header {
 }
 
 button {
+  font-size: 1em;
   padding: 12px 20px;
   background-color: rgb(162, 203, 241);
   border-radius: 10px 15px;
@@ -65,4 +67,11 @@ td {
 
 #sources {
   display: none;
+}
+
+select {
+  background-color: rgb(190, 182, 182);
+  padding: 0.7em;
+  border-radius: 10px;
+  font-size: 0.6em;
 }

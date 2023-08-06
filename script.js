@@ -5,13 +5,24 @@ window.addEventListener("load", start);
 let playerStatsLIHL;
 let playerStatsFBG;
 let currentLeague;
+let filteredLeague;
 
 async function start(params) {
   await getStats();
   currentLeague = playerStatsLIHL;
+  filteredLeague = currentLeague;
   showStats(currentLeague);
+  document.querySelector("#filter").addEventListener("change", changeFilter);
   document.querySelector("#swap").addEventListener("click", changeLeague);
   document.querySelectorAll("img").forEach((image) => image.addEventListener("click", changeSort));
+}
+
+function changeFilter(event) {
+  console.log(event.target.value);
+  const value = event.target.value;
+  filteredLeague = currentLeague.filter((player) => player.games >= value);
+  resetArrows();
+  showStats("rating");
 }
 
 function changeLeague() {
@@ -21,18 +32,25 @@ function changeLeague() {
   } else {
     currentLeague = playerStatsLIHL;
   }
-  showStats();
+  doTheSorting("x", "x", "Y", "x", "rating");
+  resetArrows();
+  showStats("rating");
+}
+
+function resetArrows(params) {
+  document.querySelectorAll("img").forEach((image) => image.addEventListener("click", changeSort));
+  document.querySelectorAll("img").forEach((image) => (image.src = "images/arrowBoth.png"));
 }
 
 async function getStats() {
-  const promiseLIHL = await fetch("stats/statsLIHL.json");
+  const promiseLIHL = await fetch("stats/endOfSeasonStatsLIHL.json");
   playerStatsLIHL = await promiseLIHL.json();
   const promiseFBG = await fetch("stats/statsFBG.json");
   playerStatsFBG = await promiseFBG.json();
 }
 
 function showStats(id, arrowValue) {
-  console.log("current league:", currentLeague);
+  console.log("current league:", filteredLeague);
   const stats = document.querySelector("#playerStats");
   stats.innerHTML = "";
   let n;
@@ -40,11 +58,11 @@ function showStats(id, arrowValue) {
   console.log("id", id);
   if (arrowValue === "images/arrowDown.png" && id !== "name") {
     console.log("@@@@@@@@@@@@@@@@@@");
-    n = currentLeague.length;
+    n = filteredLeague.length;
   } else {
     n = 1;
   }
-  for (const player of currentLeague) {
+  for (const player of filteredLeague) {
     if (id === "name") {
       n = player.rank;
     }
@@ -55,6 +73,7 @@ function showStats(id, arrowValue) {
         <td>${n}</td>
         <td>${player.name}</td>
         <td>${player.rating}</td>
+        <td>${player.games}</td>
         <td>${player.lumberAt7.toFixed(0)}</td>
         <td>${player.lumberAt10.toFixed(0)}</td>
         <td>${player.lumberAt14.toFixed(0)}</td>
@@ -104,16 +123,17 @@ function doTheSorting(arrowValue, both, down, up, id) {
   if (id === "name") {
     // console.log("sort by name");
     if (arrowValue === both || arrowValue === up) {
-      currentLeague.sort(sortByLetter);
+      filteredLeague.sort(sortByLetter);
     } else if (arrowValue === down) {
-      currentLeague.sort(sortByLetter).reverse();
+      filteredLeague.sort(sortByLetter).reverse();
     }
   } else if (arrowValue === down) {
+    console.log("checkasdfjasdfasd@@@");
     // console.log("number down");
-    currentLeague.sort(sortByNumber);
+    filteredLeague.sort(sortByNumber);
   } else {
     // console.log("number up");
-    currentLeague.sort(sortByNumber).reverse();
+    filteredLeague.sort(sortByNumber).reverse();
   }
   function sortByNumber(player1, player2) {
     return player1[id] - player2[id];

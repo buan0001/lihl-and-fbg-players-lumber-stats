@@ -10,6 +10,18 @@
     <header>
       <h2>Lumber stats for LIHL and FBG players, season 16 & 7</h2>
       <button id="swap">Swap league</button>
+      <br />
+      <br />
+      <form id="filter">
+        <label for="filter">Only show people above this many games:</label>
+        <select name="filter" id="" autocomplete="off">
+          <option value="2000" selected="selected">Show all</option>
+          <option value="10">10</option>
+          <option value="20">20</option>
+          <option value="50">50</option>
+          <option value="100">100</option>
+        </select>
+      </form>
     </header>
     <table>
       <thead>
@@ -17,6 +29,7 @@
           <th>Rank</th>
           <th>Name<img src="images/arrowBoth.png" id="name" /></th>
           <th>Rating<img src="images/arrowBoth.png" id="rating" /></th>
+          <th>Games played<img src="images/arrowBoth.png" id="games" /></th>
           <th>Lumber at 7<img src="images/arrowBoth.png" id="lumberAt7" /></th>
           <th>Lumber at 10<img src="images/arrowBoth.png" id="lumberAt10" /></th>
           <th>Lumber at 14<img src="images/arrowBoth.png" id="lumberAt14" /></th>
