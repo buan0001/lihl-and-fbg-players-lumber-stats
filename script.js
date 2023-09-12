@@ -19,6 +19,74 @@ function addEventListeners() {
   document.querySelector("#detail-box").addEventListener("change", doTheThings);
   document.querySelector("#search").addEventListener("keyup", changeSearch);
   document.querySelectorAll("img").forEach((image) => image.addEventListener("click", changeSortAndArrows));
+  document.querySelector("#newLumber").addEventListener("submit", newStatsClicked);
+}
+
+function newStatsClicked(event) {
+  event.preventDefault();
+  const form = event.target;
+  const date = form.date.value;
+  const season = form.season.value;
+  const fileName = `${date}-${season}`;
+  newStats(fileName, season);
+}
+
+async function newStats(fileName, season) {
+  const ladder = "LIHL";
+  const limit = 200;
+  const listOfPlayersThatSeason = await getJSONFromWC3Stats(`https://api.wc3stats.com/leaderboard&map=Legion%20TD&ladder=${ladder}&season=Season%20${season}&limit=${limit}`);
+  const playersAndTheirLumber = [];
+  for (const player of listOfPlayersThatSeason) {
+    if (player.played > 5) {
+      const seperateNameAndTag = player.name.split("#");
+      const name = seperateNameAndTag[0];
+
+      console.log("name", name);
+      const tag = seperateNameAndTag[1];
+      let listOfSeasonsThatPersonParticipatedIn;
+      if (tag !== undefined) {
+        listOfSeasonsThatPersonParticipatedIn = await fetch(`https://api.wc3stats.com/profiles/${name}%23${tag}`);
+      } else {
+        listOfSeasonsThatPersonParticipatedIn = await fetch(`https://api.wc3stats.com/profiles/${name}`);
+      }
+      const toJSON = await listOfSeasonsThatPersonParticipatedIn.json();
+
+      const foundCorrectEntry = toJSON.body.find((entry) => entry.key.season === "Season " + season && entry.key.ladder === ladder);
+      const fetchEntryStats = await fetch(`https://api.wc3stats.com/profiles/${name}/${foundCorrectEntry.id}`);
+      const toJSON1 = await fetchEntryStats.json();
+      const finalStatsID = toJSON1.body.stats[0].id;
+      const finalFetch = await fetch(`https://api.wc3stats.com/stats/${finalStatsID}`);
+      const toJSON2 = await finalFetch.json();
+      if (toJSON2.body.types.range.roundLumber14 !== undefined) {
+        const statStart = toJSON2.body.types.range;
+        playersAndTheirLumber.push({
+          rating: player.rating,
+          name: name,
+          games: statStart.stayPercent.cardinality,
+          lumberAt7: statStart.roundLumber7.average.value,
+          lumberAt10: statStart.roundLumber10.average.value,
+          lumberAt14: statStart.roundLumber14.average.value,
+        });
+      }
+    }
+  }
+  const arrayToDownload = JSON.stringify(playersAndTheirLumber);
+  createAndDownloadBlob(arrayToDownload, fileName);
+}
+
+function createAndDownloadBlob(arrayToDownload, fileName) {
+  const file = new Blob([JSONArray], { type: "text/json" });
+  const link = document.createElement("a");
+  const url = URL.createObjectURL(file);
+  if (link.download !== undefined) {
+    link.href = url;
+    link.setAttribute("download", fileName);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  } else {
+    console.log("else+???");
+  }
 }
 
 async function getStats(fileDate) {
