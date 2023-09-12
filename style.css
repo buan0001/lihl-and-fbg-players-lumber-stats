@@ -1,7 +1,9 @@
 body {
   background-color: rgb(197, 109, 109);
+  /* background-color: rgb(255, 255, 0); */
   margin: 0;
-  font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  /* font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif; */
+  font-family: Verdana, Geneva, Tahoma, sans-serif;
 }
 
 header {
@@ -10,10 +12,11 @@ header {
 }
 
 button {
-  font-size: 1em;
+  font-size: 0.8em;
   padding: 12px 20px;
   background-color: rgb(162, 203, 241);
-  border-radius: 10px 15px;
+  color: rgba(99, 81, 4, 0.884);
+  border-radius: 5px;
 }
 
 button:hover {
@@ -76,8 +79,42 @@ select {
   font-size: 0.6em;
 }
 
-input{
+input {
   background-color: rgb(187, 172, 172);
   border-radius: 5px;
   /* border: rgb(39, 36, 36) solid 1px; */
+}
+
+#header-grid {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  gap: 40px;
+}
+
+#title-grid {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+}
+
+input {
+  background-color: rgb(103, 214, 203, 0.9);
+  color: rgb(17, 11, 2);
+  padding: 10px;
+}
+
+input[type="checkbox"] {
+  display: block;
+  width: 2em;
+  height: 2em;
+  background-color: #412a2a;
+  color: red;
+}
+
+select {
+  background-color: rgb(103, 214, 203, 0.9);
+  padding: 10px;
 }

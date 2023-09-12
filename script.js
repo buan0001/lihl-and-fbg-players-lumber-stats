@@ -15,7 +15,9 @@ async function start(params) {
   await getStats();
   currentLeague = playerStatsLIHL;
   filteredLeague = currentLeague;
-  showStats(currentLeague);
+
+  addColors();
+  doTheThings();
   document.querySelector("#filter").addEventListener("change", changeFilter);
   document.querySelector("#swap").addEventListener("click", changeLeague);
   document.querySelector("#search").addEventListener("keyup", changeSearch);
@@ -88,7 +90,8 @@ function resetArrows(params) {
 }
 
 async function getStats() {
-  const promiseLIHL = await fetch("stats/endOfSeasonStatsLIHL.json");
+  const promiseLIHL = await fetch("stats/Stats(8).json");
+  // const promiseLIHL = await fetch("stats/endOfSeasonStatsLIHL.json");
   playerStatsLIHL = await promiseLIHL.json();
   const promiseFBG = await fetch("stats/statsFBG.json");
   playerStatsFBG = await promiseFBG.json();
@@ -105,15 +108,84 @@ function showStats(finalArray) {
         <tr>
         <td>${player.rank}</td>
         <td>${player.name}</td>
-        <td>${player.rating}</td>
-        <td>${player.games}</td>
-        <td>${player.lumberAt7.toFixed(0)}</td>
-        <td>${player.lumberAt10.toFixed(0)}</td>
-        <td>${player.lumberAt14.toFixed(0)}</td>
+        <td style="background-color:${player.ratingColor}">${player.rating}</td>
+        <td style="background-color:${player.gamesColor}">${player.games}</td>
+        <td style="background-color:${player.lumberAt7Color}">${player.lumberAt7.toFixed(0)}</td>
+        <td style="background-color:${player.lumberAt10Color}">${player.lumberAt10.toFixed(0)}</td>
+        <td style="background-color:${player.lumberAt14Color}">${player.lumberAt14.toFixed(0)}</td>
         </tr>
         `;
     stats.insertAdjacentHTML("beforeend", html);
   }
+}
+
+function addColors(params) {
+  // const color7 = document.querySelectorAll(".color7");
+  // const color10 = document.querySelectorAll(".color10");
+  // const color14 = document.querySelectorAll(".color14");
+
+  // console.log("PLAYER ARRAY:", playerArray);
+
+  // let currentColor = color7;
+  let currentCheck = "lumberAt7";
+  const playerArray = Array.from(currentLeague);
+  const lengthOfList = playerArray.length;
+  const halfWayPoint = lengthOfList / 2;
+
+  const increment = 255 / halfWayPoint;
+  for (let i = 0; i < 5; i++) {
+    let currentPoint = 0;
+    let redValue = 255;
+    let greenValue = 0;
+    if (i === 1) {
+      currentCheck = "lumberAt10";
+    } else if (i === 2) {
+      currentCheck = "lumberAt14";
+    } else if (i === 3) {
+      currentCheck = "rating";
+    } else if (i === 4) {
+      currentCheck = "games";
+    }
+
+    playerArray.sort((a, b) => a[currentCheck] - b[currentCheck]);
+
+    for (const entry of playerArray) {
+      entry[currentCheck + "Color"] = `rgb(${redValue}, ${greenValue}, 0, 0.5)`;
+      if (halfWayPoint > currentPoint) {
+        greenValue += increment;
+      } else {
+        redValue -= increment;
+      }
+      currentPoint++;
+    }
+  }
+  console.log(playerArray);
+  // for (let i = 0; i < 2; i++) {
+  //   let currentPoint = 0;
+  //   let redValue = 255;
+  //   let greenValue = 0;
+  //   if (i === 1) {
+  //     currentCheck = "lumberAt10";
+  //     currentColor = color10;
+  //   } else if (i === 2) {
+  //     currentCheck = "lumberAt14";
+  //     currentColor = color14;
+  //   }
+
+  //   playerArray.sort((a, b) => b[currentCheck] - a[currentCheck]);
+
+  //   for (const td of currentColor) {
+  //     td.style.background = `rgb(${redValue}, ${greenValue}, 0)`;
+  //     if (halfWayPoint > currentPoint) {
+  //       console.log("if");
+  //       greenValue += increment;
+  //     } else {
+  //       console.log("else");
+  //       redValue -= increment;
+  //     }
+  //     currentPoint++;
+  //   }
+  // }
 }
 
 function changeSort(event) {
