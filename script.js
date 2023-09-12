@@ -29,7 +29,7 @@ async function getStats(fileDate) {
 
 async function prepareData(fileDate) {
   await getStats(fileDate);
-  addColors();
+  addColorsAndRanks();
   doTheThings();
 }
 
@@ -37,7 +37,7 @@ function changeEntry(event) {
   prepareData(event.target.value);
 }
 
-function addColors(params) {
+function addColorsAndRanks(params) {
   const playerArray = Array.from(currentLeague);
   let currentCheck = "lumberAt7";
   const lengthOfList = playerArray.length;
