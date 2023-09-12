@@ -1,42 +1,88 @@
 "use strict";
 
 window.addEventListener("load", start);
+// start();
 
 let playerStatsLIHL;
-let playerStatsFBG;
 let currentLeague;
-let filteredLeague;
 let sortBy = "rating";
-let filterValue = 0;
 let arrowValue = "images/arrowDown.png";
 let searchValue;
 
-async function start(params) {
-  await getStats();
-  currentLeague = playerStatsLIHL;
-  filteredLeague = currentLeague;
+function start(params) {
+  prepareData(document.querySelector("#entrySelect").value);
+  addEventListeners();
+}
 
-  addColors();
-  doTheThings();
-  // document.querySelector("#filter").addEventListener("change", changeFilter);
-  // document.querySelector("#swap").addEventListener("click", changeLeague);
+function addEventListeners() {
+  document.querySelector("#entrySelect").addEventListener("change", changeEntry);
   document.querySelector("#detail-box").addEventListener("change", doTheThings);
   document.querySelector("#search").addEventListener("keyup", changeSearch);
-  document.querySelectorAll("img").forEach((image) => image.addEventListener("click", changeSort));
+  document.querySelectorAll("img").forEach((image) => image.addEventListener("click", changeSortAndArrows));
+}
+
+async function getStats(fileDate) {
+  console.log(fileDate);
+  const promiseLIHL = await fetch(`stats/${fileDate}.json`);
+  currentLeague = await promiseLIHL.json();
+}
+
+async function prepareData(fileDate) {
+  await getStats(fileDate);
+  addColors();
+  doTheThings();
+}
+
+function changeEntry(event) {
+  prepareData(event.target.value);
+}
+
+function addColors(params) {
+  const playerArray = Array.from(currentLeague);
+  let currentCheck = "lumberAt7";
+  const lengthOfList = playerArray.length;
+  const halfWayPoint = lengthOfList / 2;
+
+  const increment = 255 / halfWayPoint;
+  for (let i = 0; i < 5; i++) {
+    let currentPoint = 0;
+    let redValue = 255;
+    let greenValue = 0;
+    if (i === 1) {
+      currentCheck = "lumberAt10";
+    } else if (i === 2) {
+      currentCheck = "lumberAt14";
+    } else if (i === 3) {
+      currentCheck = "rating";
+    } else if (i === 4) {
+      currentCheck = "games";
+    }
+
+    playerArray.sort((a, b) => a[currentCheck] - b[currentCheck]);
+    let n = currentLeague.length;
+    for (const entry of playerArray) {
+      entry[currentCheck + "Color"] = `rgb(${redValue}, ${greenValue}, 0, 0.5)`;
+      entry[currentCheck + "Rank"] = n;
+      if (halfWayPoint > currentPoint) {
+        greenValue += increment;
+      } else {
+        redValue -= increment;
+      }
+      currentPoint++;
+      n--;
+    }
+  }
+  console.log(playerArray);
+  console.log(currentLeague);
 }
 
 function doTheThings(params) {
   const sorted = doTheSorting();
-  const ranked = applyRank(sorted);
+  let ranked = applyRank(sorted);
   if (searchValue !== undefined) {
-    const searched = ranked.filter(applySearch);
-    const final = searched.filter(applyFilter);
-    console.log("final", final);
-    showStats(final);
-  } else {
-    const final = ranked.filter(applyFilter);
-    showStats(final);
+    ranked = ranked.filter((player) => player.name.toLowerCase().includes(searchValue));
   }
+  showStats(ranked);
 }
 
 function changeSearch(event) {
@@ -61,55 +107,44 @@ function applyRank(array) {
   return array;
 }
 
-function applySearch(player) {
-  return player.name.toLowerCase().includes(searchValue);
-}
+// function changeFilter(event) {
+//   filterValue = event.target.value;
+//   doTheThings();
+// }
 
-function changeFilter(event) {
-  filterValue = event.target.value;
-  doTheThings();
-}
+// function applyFilter(player) {
+//   return player.games >= filterValue;
+// }
 
-function applyFilter(player) {
-  return player.games >= filterValue;
-}
+// function changeLeague() {
+//   console.log("change league");
+//   if (currentLeague === playerStatsLIHL) {
+//     currentLeague = playerStatsFBG;
+//   } else {
+//     currentLeague = playerStatsLIHL;
+//   }
+//   doTheThings();
+// }
 
-function changeLeague() {
-  console.log("change league");
-  if (currentLeague === playerStatsLIHL) {
-    currentLeague = playerStatsFBG;
-  } else {
-    currentLeague = playerStatsLIHL;
-  }
-  doTheThings();
-}
-
-function resetArrows(params) {
-  sortBy = undefined;
-  document.querySelectorAll("img").forEach((image) => image.addEventListener("click", changeSort));
-  document.querySelectorAll("img").forEach((image) => (image.src = "images/arrowBoth.png"));
-}
-
-async function getStats() {
-  const promiseLIHL = await fetch("stats/Stats(8).json");
-  // const promiseLIHL = await fetch("stats/endOfSeasonStatsLIHL.json");
-  playerStatsLIHL = await promiseLIHL.json();
-  const promiseFBG = await fetch("stats/statsFBG.json");
-  playerStatsFBG = await promiseFBG.json();
-}
+// function resetArrows(params) {
+//   sortBy = undefined;
+//   document.querySelectorAll("img").forEach((image) => image.addEventListener("click", changeSort));
+//   document.querySelectorAll("img").forEach((image) => (image.src = "images/arrowBoth.png"));
+// }
 
 function showStats(finalArray) {
   const stats = document.querySelector("#playerStats");
   stats.innerHTML = "";
   const checked = document.querySelector("#detail-box").checked;
   console.log("checked: ", checked);
+  console.log("sort by:", sortBy);
   if (checked) {
     for (const player of finalArray) {
       const html =
         /*html*/
         `
         <tr>
-        <td>${player.rank}</td>
+        <td>${player[sortBy + "Rank"]}</td>
         <td>${player.name}</td>
         <td >${player.rating}</td>
         <td >${player.games}</td>
@@ -126,7 +161,7 @@ function showStats(finalArray) {
         /*html*/
         `
         <tr>
-        <td>${player.rank}</td>
+        <td>${player[sortBy + "Rank"]}</td>
         <td>${player.name}</td>
         <td style="background-color:${player.ratingColor}">${player.rating}</td>
         <td style="background-color:${player.gamesColor}">${player.games}</td>
@@ -140,78 +175,13 @@ function showStats(finalArray) {
   }
 }
 
-function addColors(params) {
-  // const color7 = document.querySelectorAll(".color7");
-  // const color10 = document.querySelectorAll(".color10");
-  // const color14 = document.querySelectorAll(".color14");
-
-  // console.log("PLAYER ARRAY:", playerArray);
-
-  // let currentColor = color7;
-  let currentCheck = "lumberAt7";
-  const playerArray = Array.from(currentLeague);
-  const lengthOfList = playerArray.length;
-  const halfWayPoint = lengthOfList / 2;
-
-  const increment = 255 / halfWayPoint;
-  for (let i = 0; i < 5; i++) {
-    let currentPoint = 0;
-    let redValue = 255;
-    let greenValue = 0;
-    if (i === 1) {
-      currentCheck = "lumberAt10";
-    } else if (i === 2) {
-      currentCheck = "lumberAt14";
-    } else if (i === 3) {
-      currentCheck = "rating";
-    } else if (i === 4) {
-      currentCheck = "games";
-    }
-
-    playerArray.sort((a, b) => a[currentCheck] - b[currentCheck]);
-
-    for (const entry of playerArray) {
-      entry[currentCheck + "Color"] = `rgb(${redValue}, ${greenValue}, 0, 0.5)`;
-      if (halfWayPoint > currentPoint) {
-        greenValue += increment;
-      } else {
-        redValue -= increment;
-      }
-      currentPoint++;
-    }
-  }
-  console.log(playerArray);
-  // for (let i = 0; i < 2; i++) {
-  //   let currentPoint = 0;
-  //   let redValue = 255;
-  //   let greenValue = 0;
-  //   if (i === 1) {
-  //     currentCheck = "lumberAt10";
-  //     currentColor = color10;
-  //   } else if (i === 2) {
-  //     currentCheck = "lumberAt14";
-  //     currentColor = color14;
-  //   }
-
-  //   playerArray.sort((a, b) => b[currentCheck] - a[currentCheck]);
-
-  //   for (const td of currentColor) {
-  //     td.style.background = `rgb(${redValue}, ${greenValue}, 0)`;
-  //     if (halfWayPoint > currentPoint) {
-  //       console.log("if");
-  //       greenValue += increment;
-  //     } else {
-  //       console.log("else");
-  //       redValue -= increment;
-  //     }
-  //     currentPoint++;
-  //   }
-  // }
-}
-
-function changeSort(event) {
+function changeSortAndArrows(event) {
+  // Get the sort value and use its attribute to determine the arrow value
+  // This value is the CURRENT one, meaning the one before the "desired" value
   sortBy = event.target.id;
   arrowValue = event.target.attributes[0].value;
+
+  // Reset all arrows except the selected one
   document.querySelectorAll("img").forEach((image) => {
     if (image !== event.target) {
       image.src = "images/arrowBoth.png";
@@ -231,7 +201,7 @@ function changeSort(event) {
     arrowValue = up;
   }
 
-  document.querySelectorAll("img").forEach((image) => image.addEventListener("click", changeSort));
+  document.querySelectorAll("img").forEach((image) => image.addEventListener("click", changeSortAndArrows));
   doTheThings();
 }
 
