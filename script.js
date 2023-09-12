@@ -18,8 +18,9 @@ async function start(params) {
 
   addColors();
   doTheThings();
-  document.querySelector("#filter").addEventListener("change", changeFilter);
-  document.querySelector("#swap").addEventListener("click", changeLeague);
+  // document.querySelector("#filter").addEventListener("change", changeFilter);
+  // document.querySelector("#swap").addEventListener("click", changeLeague);
+  document.querySelector("#detail-box").addEventListener("change", doTheThings);
   document.querySelector("#search").addEventListener("keyup", changeSearch);
   document.querySelectorAll("img").forEach((image) => image.addEventListener("click", changeSort));
 }
@@ -100,11 +101,30 @@ async function getStats() {
 function showStats(finalArray) {
   const stats = document.querySelector("#playerStats");
   stats.innerHTML = "";
-
-  for (const player of finalArray) {
-    const html =
-      /*html*/
-      `
+  const checked = document.querySelector("#detail-box").checked;
+  console.log("checked: ", checked);
+  if (checked) {
+    for (const player of finalArray) {
+      const html =
+        /*html*/
+        `
+        <tr>
+        <td>${player.rank}</td>
+        <td>${player.name}</td>
+        <td >${player.rating}</td>
+        <td >${player.games}</td>
+        <td >${player.lumberAt7.toFixed(0)}</td>
+        <td >${player.lumberAt10.toFixed(0)}</td>
+        <td >${player.lumberAt14.toFixed(0)}</td>
+        </tr>
+        `;
+      stats.insertAdjacentHTML("beforeend", html);
+    }
+  } else {
+    for (const player of finalArray) {
+      const html =
+        /*html*/
+        `
         <tr>
         <td>${player.rank}</td>
         <td>${player.name}</td>
@@ -115,7 +135,8 @@ function showStats(finalArray) {
         <td style="background-color:${player.lumberAt14Color}">${player.lumberAt14.toFixed(0)}</td>
         </tr>
         `;
-    stats.insertAdjacentHTML("beforeend", html);
+      stats.insertAdjacentHTML("beforeend", html);
+    }
   }
 }
 
