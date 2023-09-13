@@ -31,9 +31,16 @@ function newStatsClicked(event) {
   newStats(fileName, season);
 }
 
+async function getJSONFromWC3Stats(dataToFetch) {
+  const dataThings = await fetch(dataToFetch);
+  const JSONtoJS = await dataThings.json();
+  const listOfPlayers = JSONtoJS.body;
+  return listOfPlayers;
+}
+
 async function newStats(fileName, season) {
   const ladder = "LIHL";
-  const limit = 200;
+  const limit = 1;
   const listOfPlayersThatSeason = await getJSONFromWC3Stats(`https://api.wc3stats.com/leaderboard&map=Legion%20TD&ladder=${ladder}&season=Season%20${season}&limit=${limit}`);
   const playersAndTheirLumber = [];
   for (const player of listOfPlayersThatSeason) {
@@ -54,15 +61,20 @@ async function newStats(fileName, season) {
       const foundCorrectEntry = toJSON.body.find((entry) => entry.key.season === "Season " + season && entry.key.ladder === ladder);
       const fetchEntryStats = await fetch(`https://api.wc3stats.com/profiles/${name}/${foundCorrectEntry.id}`);
       const toJSON1 = await fetchEntryStats.json();
+      console.log(toJSON1);
+      console.log(toJSON1.body.wins);
       const finalStatsID = toJSON1.body.stats[0].id;
       const finalFetch = await fetch(`https://api.wc3stats.com/stats/${finalStatsID}`);
       const toJSON2 = await finalFetch.json();
+
       if (toJSON2.body.types.range.roundLumber14 !== undefined) {
         const statStart = toJSON2.body.types.range;
+
         playersAndTheirLumber.push({
           rating: player.rating,
           name: name,
           games: statStart.stayPercent.cardinality,
+          winrate: Number(((toJSON1.body.wins / statStart.stayPercent.cardinality) * 100).toFixed(2)),
           lumberAt7: statStart.roundLumber7.average.value,
           lumberAt10: statStart.roundLumber10.average.value,
           lumberAt14: statStart.roundLumber14.average.value,
@@ -70,8 +82,9 @@ async function newStats(fileName, season) {
       }
     }
   }
-  const arrayToDownload = JSON.stringify(playersAndTheirLumber);
-  createAndDownloadBlob(arrayToDownload, fileName);
+  console.log(playersAndTheirLumber);
+  // const arrayToDownload = JSON.stringify(playersAndTheirLumber);
+  // createAndDownloadBlob(arrayToDownload, fileName);
 }
 
 function createAndDownloadBlob(arrayToDownload, fileName) {
