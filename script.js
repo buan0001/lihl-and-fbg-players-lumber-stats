@@ -1,25 +1,27 @@
 "use strict";
 
-window.addEventListener("load", start);
-// start();
-
 let playerStatsLIHL;
 let currentLeague;
 let sortBy = "rating";
 let arrowValue = "images/arrowDown.png";
 let searchValue;
+let filterValue = document.querySelector("#filter").value;
+
+window.addEventListener("load", start);
 
 function start(params) {
+  console.log(document.querySelector("#entrySelect").value);
   prepareData(document.querySelector("#entrySelect").value);
   addEventListeners();
 }
 
 function addEventListeners() {
+  document.querySelector("#filter").addEventListener("change", changeFilter);
   document.querySelector("#entrySelect").addEventListener("change", changeEntry);
+  document.querySelector("#newLumber").addEventListener("submit", newStatsClicked);
   document.querySelector("#detail-box").addEventListener("change", doTheThings);
   document.querySelector("#search").addEventListener("keyup", changeSearch);
   document.querySelectorAll("img").forEach((image) => image.addEventListener("click", changeSortAndArrows));
-  document.querySelector("#newLumber").addEventListener("submit", newStatsClicked);
 }
 
 function newStatsClicked(event) {
@@ -40,7 +42,7 @@ async function getJSONFromWC3Stats(dataToFetch) {
 
 async function newStats(fileName, season) {
   const ladder = "LIHL";
-  const limit = 1;
+  const limit = 100;
   const listOfPlayersThatSeason = await getJSONFromWC3Stats(`https://api.wc3stats.com/leaderboard&map=Legion%20TD&ladder=${ladder}&season=Season%20${season}&limit=${limit}`);
   const playersAndTheirLumber = [];
   for (const player of listOfPlayersThatSeason) {
@@ -61,8 +63,6 @@ async function newStats(fileName, season) {
       const foundCorrectEntry = toJSON.body.find((entry) => entry.key.season === "Season " + season && entry.key.ladder === ladder);
       const fetchEntryStats = await fetch(`https://api.wc3stats.com/profiles/${name}/${foundCorrectEntry.id}`);
       const toJSON1 = await fetchEntryStats.json();
-      console.log(toJSON1);
-      console.log(toJSON1.body.wins);
       const finalStatsID = toJSON1.body.stats[0].id;
       const finalFetch = await fetch(`https://api.wc3stats.com/stats/${finalStatsID}`);
       const toJSON2 = await finalFetch.json();
@@ -83,12 +83,12 @@ async function newStats(fileName, season) {
     }
   }
   console.log(playersAndTheirLumber);
-  // const arrayToDownload = JSON.stringify(playersAndTheirLumber);
-  // createAndDownloadBlob(arrayToDownload, fileName);
+  const arrayToDownload = JSON.stringify(playersAndTheirLumber);
+  createAndDownloadBlob(arrayToDownload, fileName);
 }
 
 function createAndDownloadBlob(arrayToDownload, fileName) {
-  const file = new Blob([JSONArray], { type: "text/json" });
+  const file = new Blob([arrayToDownload], { type: "text/json" });
   const link = document.createElement("a");
   const url = URL.createObjectURL(file);
   if (link.download !== undefined) {
@@ -125,7 +125,7 @@ function addColors(params) {
   const halfWayPoint = lengthOfList / 2;
 
   const increment = 255 / halfWayPoint;
-  for (let i = 0; i < 5; i++) {
+  for (let i = 0; i < 6; i++) {
     let currentPoint = 0;
     let redValue = 255;
     let greenValue = 0;
@@ -137,6 +137,8 @@ function addColors(params) {
       currentCheck = "rating";
     } else if (i === 4) {
       currentCheck = "games";
+    } else if (i === 5) {
+      currentCheck = "winrate";
     }
 
     playerArray.sort((a, b) => a[currentCheck] - b[currentCheck]);
@@ -163,6 +165,8 @@ function doTheThings(params) {
   if (searchValue !== undefined) {
     ranked = ranked.filter((player) => player.name.toLowerCase().includes(searchValue));
   }
+  console.log(filterValue);
+  ranked = ranked.filter(applyFilter);
   showStats(ranked);
 }
 
@@ -188,14 +192,16 @@ function applyRank(array) {
   return array;
 }
 
-// function changeFilter(event) {
-//   filterValue = event.target.value;
-//   doTheThings();
-// }
+function changeFilter(event) {
+  filterValue = event.target.value;
+  doTheThings();
+}
 
-// function applyFilter(player) {
-//   return player.games >= filterValue;
-// }
+function applyFilter(player) {
+  let filterValue = document.querySelector("#filter").value;
+  console.log(filterValue);
+  return player.games >= filterValue;
+}
 
 // function changeLeague() {
 //   console.log("change league");
@@ -228,6 +234,7 @@ function showStats(finalArray) {
         <td>${player[sortBy + "Rank"]}</td>
         <td>${player.name}</td>
         <td >${player.rating}</td>
+        <td >${player.winrate}%</td>
         <td >${player.games}</td>
         <td >${player.lumberAt7.toFixed(0)}</td>
         <td >${player.lumberAt10.toFixed(0)}</td>
@@ -245,10 +252,11 @@ function showStats(finalArray) {
         <td>${player[sortBy + "Rank"]}</td>
         <td>${player.name}</td>
         <td style="background-color:${player.ratingColor}">${player.rating}</td>
+        <td style="background-color:${player.winrateColor}">${player.winrate}%</td>
         <td style="background-color:${player.gamesColor}">${player.games}</td>
-        <td style="background-color:${player.lumberAt7Color}">${player.lumberAt7.toFixed(0)}</td>
-        <td style="background-color:${player.lumberAt10Color}">${player.lumberAt10.toFixed(0)}</td>
-        <td style="background-color:${player.lumberAt14Color}">${player.lumberAt14.toFixed(0)}</td>
+        <td style="background-color:${player.lumberAt7Color}">${player.lumberAt7.toFixed(0)} (${player.lumberAt7Rank})</td>
+        <td style="background-color:${player.lumberAt10Color}">${player.lumberAt10.toFixed(0)} (${player.lumberAt10Rank})</td>
+        <td style="background-color:${player.lumberAt14Color}">${player.lumberAt14.toFixed(0)} (${player.lumberAt14Rank})</td>
         </tr>
         `;
       stats.insertAdjacentHTML("beforeend", html);
