@@ -25,6 +25,7 @@ async function getStats(fileDate) {
   console.log(fileDate);
   const promiseLIHL = await fetch(`stats/${fileDate}.json`);
   currentLeague = await promiseLIHL.json();
+  console.log("STATS:",currentLeague);
 }
 
 async function prepareData(fileDate) {
