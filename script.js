@@ -164,10 +164,11 @@ function showStats(finalArray) {
         <td>${player[sortBy + "Rank"]}</td>
         <td>${player.name}</td>
         <td style="background-color:${player.ratingColor}">${player.rating}</td>
+        <td style="background-color:${player.winrateColor}">${player.winrate}%</td>
         <td style="background-color:${player.gamesColor}">${player.games}</td>
-        <td style="background-color:${player.lumberAt7Color}">${player.lumberAt7.toFixed(0)}</td>
-        <td style="background-color:${player.lumberAt10Color}">${player.lumberAt10.toFixed(0)}</td>
-        <td style="background-color:${player.lumberAt14Color}">${player.lumberAt14.toFixed(0)}</td>
+        <td style="background-color:${player.lumberAt7Color}">${player.lumberAt7.toFixed(0)} (${player.lumberAt7Rank})</td>
+        <td style="background-color:${player.lumberAt10Color}">${player.lumberAt10.toFixed(0)} (${player.lumberAt10Rank})</td>
+        <td style="background-color:${player.lumberAt14Color}">${player.lumberAt14.toFixed(0)} (${player.lumberAt14Rank})</td>
         </tr>
         `;
       stats.insertAdjacentHTML("beforeend", html);
