@@ -105,7 +105,7 @@ input {
 }
 
 input {
-  background-color: rgb(103, 214, 203, 0.9);
+background-color: rgba(163, 207, 203, 0.9);
   color: rgb(17, 11, 2);
   padding: 10px;
 }
@@ -119,6 +119,12 @@ input[type="checkbox"] {
 }
 
 select {
-  background-color: rgb(103, 214, 203, 0.9);
+  background-color: rgba(163, 207, 203, 0.9);
   padding: 10px;
+}
+
+
+.inLineRank{
+  font-size: 0.6em;
+  opacity: 0.7;
 }

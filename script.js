@@ -45,7 +45,7 @@ function addColorsAndRanks(params) {
   const halfWayPoint = lengthOfList / 2;
 
   const increment = 255 / halfWayPoint;
-  for (let i = 0; i < 5; i++) {
+  for (let i = 0; i < 6; i++) {
     let currentPoint = 0;
     let redValue = 255;
     let greenValue = 0;
@@ -57,6 +57,9 @@ function addColorsAndRanks(params) {
       currentCheck = "rating";
     } else if (i === 4) {
       currentCheck = "games";
+    }
+    else if (i === 5){
+      currentCheck = "winrate"
     }
 
     playerArray.sort((a, b) => a[currentCheck] - b[currentCheck]);
@@ -134,6 +137,7 @@ function applyRank(array) {
 // }
 
 function showStats(finalArray) {
+  console.log("FINAL ARRAY:",finalArray);
   const stats = document.querySelector("#playerStats");
   stats.innerHTML = "";
   const checked = document.querySelector("#detail-box").checked;
@@ -148,6 +152,7 @@ function showStats(finalArray) {
         <td>${player[sortBy + "Rank"]}</td>
         <td>${player.name}</td>
         <td >${player.rating}</td>
+        <td >${player.winrate}%</td>
         <td >${player.games}</td>
         <td >${player.lumberAt7.toFixed(0)}</td>
         <td >${player.lumberAt10.toFixed(0)}</td>
@@ -167,9 +172,9 @@ function showStats(finalArray) {
         <td style="background-color:${player.ratingColor}">${player.rating}</td>
         <td style="background-color:${player.winrateColor}">${player.winrate}%</td>
         <td style="background-color:${player.gamesColor}">${player.games}</td>
-        <td style="background-color:${player.lumberAt7Color}">${player.lumberAt7.toFixed(0)} (${player.lumberAt7Rank})</td>
-        <td style="background-color:${player.lumberAt10Color}">${player.lumberAt10.toFixed(0)} (${player.lumberAt10Rank})</td>
-        <td style="background-color:${player.lumberAt14Color}">${player.lumberAt14.toFixed(0)} (${player.lumberAt14Rank})</td>
+        <td style="background-color:${player.lumberAt7Color}">${player.lumberAt7.toFixed(0)} <span class="inLineRank">(${player.lumberAt7Rank})</span></td>
+        <td style="background-color:${player.lumberAt10Color}">${player.lumberAt10.toFixed(0)} <span class="inLineRank">(${player.lumberAt10Rank})</span></td>
+        <td style="background-color:${player.lumberAt14Color}">${player.lumberAt14.toFixed(0)} <span class="inLineRank">(${player.lumberAt14Rank})</span></td>
         </tr>
         `;
       stats.insertAdjacentHTML("beforeend", html);
