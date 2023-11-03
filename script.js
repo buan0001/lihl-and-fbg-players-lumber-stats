@@ -29,7 +29,7 @@ async function getStats(fileDate) {
 
 async function prepareData(fileDate) {
   await getStats(fileDate);
-  addColorsAndRanks();
+  // addColorsAndRanks();
   doTheThings();
 }
 
@@ -37,8 +37,8 @@ function changeEntry(event) {
   prepareData(event.target.value);
 }
 
-function addColorsAndRanks(params) {
-  const playerArray = Array.from(currentLeague);
+function addColorsAndRanks(array) {
+  const playerArray = array;
   let currentCheck = "lumberAt7";
   const lengthOfList = playerArray.length;
   const halfWayPoint = lengthOfList / 2;
@@ -74,15 +74,20 @@ function addColorsAndRanks(params) {
   }
   console.log(playerArray);
   console.log(currentLeague);
+  return playerArray
 }
 
 function doTheThings(params) {
-  const sorted = doTheSorting();
-  let ranked = applyRank(sorted);
+
+let searched = currentLeague
   if (searchValue !== undefined) {
-    ranked = ranked.filter((player) => player.name.toLowerCase().includes(searchValue));
+    searched = currentLeague.filter((player) => player.name.toLowerCase().includes(searchValue));
   }
-  showStats(ranked);
+  const rankedArray = addColorsAndRanks(searched);
+    let sorted = doTheSorting(rankedArray);
+  showStats(sorted);
+  // let ranked = applyRank(sorted);
+  // showStats(ranked);
 }
 
 function changeSearch(event) {
@@ -157,6 +162,8 @@ function showStats(finalArray) {
     }
   } else {
     for (const player of finalArray) {
+      console.log(player);
+      const lumberStat = ((player.lumberAt10 + player.lumberAt7 + player.lumberAt14) /3).toFixed(0)
       const html =
         /*html*/
         `
@@ -165,7 +172,8 @@ function showStats(finalArray) {
         <td>${player.name}</td>
         <td style="background-color:${player.ratingColor}">${player.rating}</td>
         <td style="background-color:${player.gamesColor}">${player.games}</td>
-        <td style="background-color:${player.lumberAt7Color}">${player.lumberAt7.toFixed(0)}</td>
+        <td style="background-color:${player.lumberAt7Color}">${lumberStat}</td>
+        <td style="background-color:${player.lumberAt7Color}">${player.lumberAt7.toFixed(0)} </td>
         <td style="background-color:${player.lumberAt10Color}">${player.lumberAt10.toFixed(0)}</td>
         <td style="background-color:${player.lumberAt14Color}">${player.lumberAt14.toFixed(0)}</td>
         </tr>
@@ -205,7 +213,7 @@ function changeSortAndArrows(event) {
   doTheThings();
 }
 
-function doTheSorting() {
+function doTheSorting(differentArray = currentLeague) {
   const up = "images/arrowUp.png";
   const down = "images/arrowDown.png";
   const both = "images/arrowBoth.png";
@@ -214,12 +222,12 @@ function doTheSorting() {
     if (arrowValue === both || arrowValue === up) {
       sortedLeague = currentLeague.sort(sortByLetter);
     } else if (arrowValue === down) {
-      sortedLeague = currentLeague.sort(sortByLetter).reverse();
+      sortedLeague = differentArray.sort(sortByLetter).reverse();
     }
   } else if (arrowValue === down) {
-    sortedLeague = currentLeague.sort(sortByNumber).reverse();
+    sortedLeague = differentArray.sort(sortByNumber).reverse();
   } else {
-    sortedLeague = currentLeague.sort(sortByNumber);
+    sortedLeague = differentArray.sort(sortByNumber);
   }
   function sortByNumber(player1, player2) {
     return player1[sortBy] - player2[sortBy];
