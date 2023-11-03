@@ -9,8 +9,13 @@ let sortBy = "rating";
 let arrowValue = "images/arrowDown.png";
 let searchValue;
 
-function start(params) {
-  prepareData(document.querySelector("#entrySelect").value);
+let playerlist;
+
+async function start(params) {
+  const players = await getStats(document.querySelector("#entrySelect").value);
+  playerlist = new Listrenderer("#playerStats", players);
+  playerlist.render()
+  // prepareData(document.querySelector("#entrySelect").value);
   addEventListeners();
 }
 
@@ -24,18 +29,49 @@ function addEventListeners() {
 async function getStats(fileDate) {
   console.log(fileDate);
   const promiseLIHL = await fetch(`stats/${fileDate}.json`);
-  currentLeague = await promiseLIHL.json();
-  console.log("STATS:",currentLeague);
+  return await promiseLIHL.json();
+  // currentLeague = await promiseLIHL.json();
+  console.log("STATS:", currentLeague);
 }
 
 async function prepareData(fileDate) {
-  await getStats(fileDate);
+  // await getStats(fileDate);
   addColorsAndRanks();
   doTheThings();
 }
 
+class Listrenderer {
+  constructor(id, list) {
+    this.id = id;
+    this.table = document.querySelector(`${id}`)
+    this.list = list;
+    this.checkbox = document.querySelector("#detail-box").checked;
+  }
+
+  render(differentList = this.list) {
+    differentList.forEach((entry) => {
+      const html =
+        /*html*/
+        `
+        <tr>
+        <td>${entry[sortBy + "Rank"]}</td>
+        <td>${entry.name}</td>
+        <td >${entry.rating}</td>
+        <td >${entry.winrate}%</td>
+        <td >${entry.games}</td>
+        <td >${entry.lumberAt7.toFixed(0)}</td>
+        <td >${entry.lumberAt10.toFixed(0)}</td>
+        <td >${entry.lumberAt14.toFixed(0)}</td>
+        </tr>
+        </tr>`;
+        this.table.insertAdjacentHTML("beforeend",html)
+    });
+  }
+}
+
 function changeEntry(event) {
-  prepareData(event.target.value);
+  getStats(event.target.value);
+  // prepareData(event.target.value);
 }
 
 function addColorsAndRanks(params) {
@@ -57,9 +93,8 @@ function addColorsAndRanks(params) {
       currentCheck = "rating";
     } else if (i === 4) {
       currentCheck = "games";
-    }
-    else if (i === 5){
-      currentCheck = "winrate"
+    } else if (i === 5) {
+      currentCheck = "winrate";
     }
 
     playerArray.sort((a, b) => a[currentCheck] - b[currentCheck]);
@@ -137,7 +172,7 @@ function applyRank(array) {
 // }
 
 function showStats(finalArray) {
-  console.log("FINAL ARRAY:",finalArray);
+  console.log("FINAL ARRAY:", finalArray);
   const stats = document.querySelector("#playerStats");
   stats.innerHTML = "";
   const checked = document.querySelector("#detail-box").checked;
@@ -163,6 +198,7 @@ function showStats(finalArray) {
     }
   } else {
     for (const player of finalArray) {
+      const average = (player.lumberAt14 + player.lumberAt10 + player.lumberAt7) / 3;
       const html =
         /*html*/
         `
@@ -172,6 +208,7 @@ function showStats(finalArray) {
         <td style="background-color:${player.ratingColor}">${player.rating}</td>
         <td style="background-color:${player.winrateColor}">${player.winrate}%</td>
         <td style="background-color:${player.gamesColor}">${player.games}</td>
+        <td style="background-color:${player.lumberAt7Color}">${average.toFixed(0)} </td>
         <td style="background-color:${player.lumberAt7Color}">${player.lumberAt7.toFixed(0)} <span class="inLineRank">(${player.lumberAt7Rank})</span></td>
         <td style="background-color:${player.lumberAt10Color}">${player.lumberAt10.toFixed(0)} <span class="inLineRank">(${player.lumberAt10Rank})</span></td>
         <td style="background-color:${player.lumberAt14Color}">${player.lumberAt14.toFixed(0)} <span class="inLineRank">(${player.lumberAt14Rank})</span></td>
