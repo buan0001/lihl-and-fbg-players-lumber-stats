@@ -1,26 +1,38 @@
 export default class Listrenderer {
+    #oldList
   constructor(id, list, Itemrenderer) {
     this.id = id;
     this.table = document.querySelector(`${id}`);
-    this.list = this.applyRank(list);
+    this._list = this.#applyRank(list);
+    this.activeList = [... this._list];
+    this.#oldList = this._list
     this.checkbox = document.querySelector("#detail-box");
     this.itemrenderer = new Itemrenderer();
   }
 
-  render(differentList = this.list) {
-    console.log("LIST",this.list);
+  render(listToShow = this.activeList) {
+    console.log("LIST",this.activeList);
     this.clear()
-    differentList.forEach((entry) => {
+    listToShow.forEach((entry) => {
       const html = this.itemrenderer.render(entry, this.sortParam, this.checkbox.checked);
       this.table.insertAdjacentHTML("beforeend", html);
     });
+  }
+
+  set list(newList){
+    this._list = this.#applyRank(newList)
+    this.activeList = [...this._list]
+  }
+
+  get list(){
+    return this._list
   }
 
   clear(){
     this.table.innerHTML = ""
   }
 
-  applyRank(listToRank = this.list) {
+  #applyRank(listToRank = this.activeList) {
     const checkArray = ["games", "lumberAt10", "lumberAt14", "lumberAt7", "rating", "winrate"];
     const lengthOfList = listToRank.length;
     const halfWayPoint = lengthOfList / 2;
@@ -51,22 +63,24 @@ export default class Listrenderer {
     if (!this.sortParam || sortParam !== this.sortParam) {
       this.sortParam = sortParam;
       this.sortDir = true
-    } else if (sortParam === this.sortParam) {
+    } else if (sortParam === this.sortParam && this._list === this.#oldList) {
       this.sortDir = !this.sortDir
+    }
+    else if (this.#oldList !== this._list){
+        this.#oldList = this._list
     }
     console.log("this.sortParam",this.sortParam);
     console.log("this.sortDir", this.sortDir);
-    this.list.sort((a, b) => b[sortParam+"Rank"] - a[sortParam+"Rank"]);
+    this.activeList.sort((a, b) => b[sortParam+"Rank"] - a[sortParam+"Rank"]);
     if (this.sortDir) {
-      this.list.reverse();
+      this.activeList.reverse();
     }
-    this.render();
   }
 
   search(searchParam){
     console.log("SEARCH PRAM",searchParam);
-    const searchedList = this.list.filter(player => player.name.toLowerCase().includes(searchParam.toLowerCase()))
-    console.log("searched list",searchedList);
-    this.render(searchedList)
+    this.activeList = this._list.filter(player => player.name.toLowerCase().includes(searchParam.toLowerCase()))
+    console.log("searched list", this.activeList);
+    // return activeList
   }
 }

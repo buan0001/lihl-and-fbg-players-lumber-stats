@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Lumber stats for FBG and LIHL</title>
     <link rel="stylesheet" href="style.css" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.js"></script>
   </head>
   <body>
     <header>
@@ -18,10 +19,11 @@
           <option selected value="2023-10-06-17">Season 17 - 2023-10-06</option>
         </select>
       <input type="text" name="search" id="search" autocomplete="off" placeholder="Search player name">
-      <label for="box">Toggle colors</label>
+      <label for="box">Hide colors</label>
       <input type="checkbox" id="detail-box" name="box"></input>
       </div>
     </header>
+    <canvas id="myChart" style="width:100%;max-width:600px"></canvas>
     <table>
       <thead>
         <tr>
