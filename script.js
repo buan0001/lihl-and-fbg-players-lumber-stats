@@ -1,7 +1,7 @@
-"use strict";
+import Listrenderer from "./Listrenderer.js";
+import Itemrenderer from "./Itemrenderer.js";
 
 window.addEventListener("load", start);
-// start();
 
 let playerStatsLIHL;
 let currentLeague;
@@ -13,25 +13,27 @@ let playerlist;
 
 async function start(params) {
   const players = await getStats(document.querySelector("#entrySelect").value);
-  playerlist = new Listrenderer("#playerStats", players);
-  playerlist.render()
+  // console.log(players);
+  playerlist = new Listrenderer("#playerStats", players, Itemrenderer);
+  // console.log(playerlist.list);
+  playerlist.sort("rating")
   // prepareData(document.querySelector("#entrySelect").value);
   addEventListeners();
 }
 
 function addEventListeners() {
   document.querySelector("#entrySelect").addEventListener("change", changeEntry);
-  document.querySelector("#detail-box").addEventListener("change", doTheThings);
-  document.querySelector("#search").addEventListener("keyup", changeSearch);
+  document.querySelector("#detail-box").addEventListener("change", () => playerlist.render());
+  document.querySelector("#search").addEventListener("keyup", (event) => playerlist.search(event.target.value));
   document.querySelectorAll("img").forEach((image) => image.addEventListener("click", changeSortAndArrows));
 }
 
 async function getStats(fileDate) {
   console.log(fileDate);
   const promiseLIHL = await fetch(`stats/${fileDate}.json`);
+  console.log("STATS:", currentLeague);
   return await promiseLIHL.json();
   // currentLeague = await promiseLIHL.json();
-  console.log("STATS:", currentLeague);
 }
 
 async function prepareData(fileDate) {
@@ -40,34 +42,7 @@ async function prepareData(fileDate) {
   doTheThings();
 }
 
-class Listrenderer {
-  constructor(id, list) {
-    this.id = id;
-    this.table = document.querySelector(`${id}`)
-    this.list = list;
-    this.checkbox = document.querySelector("#detail-box").checked;
-  }
 
-  render(differentList = this.list) {
-    differentList.forEach((entry) => {
-      const html =
-        /*html*/
-        `
-        <tr>
-        <td>${entry[sortBy + "Rank"]}</td>
-        <td>${entry.name}</td>
-        <td >${entry.rating}</td>
-        <td >${entry.winrate}%</td>
-        <td >${entry.games}</td>
-        <td >${entry.lumberAt7.toFixed(0)}</td>
-        <td >${entry.lumberAt10.toFixed(0)}</td>
-        <td >${entry.lumberAt14.toFixed(0)}</td>
-        </tr>
-        </tr>`;
-        this.table.insertAdjacentHTML("beforeend",html)
-    });
-  }
-}
 
 function changeEntry(event) {
   getStats(event.target.value);
@@ -115,18 +90,21 @@ function addColorsAndRanks(params) {
   console.log(currentLeague);
 }
 
-function doTheThings(params) {
-  const sorted = doTheSorting();
-  let ranked = applyRank(sorted);
-  if (searchValue !== undefined) {
-    ranked = ranked.filter((player) => player.name.toLowerCase().includes(searchValue));
-  }
-  showStats(ranked);
+function doTheThings(sortBy) {
+  console.log("sort by",sortBy);
+  playerlist.sort(sortBy)
+  // const sorted = doTheSorting();
+  // let ranked = applyRank(sorted);
+  // if (searchValue !== undefined) {
+  //   ranked = ranked.filter((player) => player.name.toLowerCase().includes(searchValue));
+  // }
+  // showStats(ranked);
 }
 
 function changeSearch(event) {
-  searchValue = event.target.value;
-  doTheThings();
+  playerlist.search(event.target.value)
+  // searchValue = event.target.value;
+  // doTheThings();
 }
 
 function applyRank(array) {
@@ -222,8 +200,8 @@ function showStats(finalArray) {
 function changeSortAndArrows(event) {
   // Get the sort value and use its attribute to determine the arrow value
   // This value is the CURRENT one, meaning the one before the "desired" value
-  sortBy = event.target.id;
-  arrowValue = event.target.attributes[0].value;
+  const sortBy = event.target.id;
+  let arrowValue = event.target.attributes[0].value;
 
   // Reset all arrows except the selected one
   document.querySelectorAll("img").forEach((image) => {
@@ -246,7 +224,7 @@ function changeSortAndArrows(event) {
   }
 
   document.querySelectorAll("img").forEach((image) => image.addEventListener("click", changeSortAndArrows));
-  doTheThings();
+  doTheThings(sortBy);
 }
 
 function doTheSorting() {
