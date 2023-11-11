@@ -69,8 +69,8 @@ export default class Listrenderer {
     else if (this.#oldList !== this._list){
         this.#oldList = this._list
     }
-    console.log("this.sortParam",this.sortParam);
-    console.log("this.sortDir", this.sortDir);
+    // console.log("this.sortParam",this.sortParam);
+    // console.log("this.sortDir", this.sortDir);
     this.activeList.sort((a, b) => b[sortParam+"Rank"] - a[sortParam+"Rank"]);
     if (this.sortDir) {
       this.activeList.reverse();
@@ -78,9 +78,9 @@ export default class Listrenderer {
   }
 
   search(searchParam){
-    console.log("SEARCH PRAM",searchParam);
     this.activeList = this._list.filter(player => player.name.toLowerCase().includes(searchParam.toLowerCase()))
-    console.log("searched list", this.activeList);
+    // console.log("SEARCH PRAM",searchParam);
+    // console.log("searched list", this.activeList);
     // return activeList
   }
 }

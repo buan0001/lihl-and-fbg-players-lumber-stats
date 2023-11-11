@@ -19,11 +19,14 @@
           <option selected value="2023-10-06-17">Season 17 - 2023-10-06</option>
         </select>
       <input type="text" name="search" id="search" autocomplete="off" placeholder="Search player name">
+      <button id="graph-btn">Toggle elo distribution graph</button>
       <label for="box">Hide colors</label>
       <input type="checkbox" id="detail-box" name="box"></input>
       </div>
     </header>
+    <div id="canvas-container">
     <canvas id="myChart" style="width:100%;max-width:600px"></canvas>
+    </div>
     <table>
       <thead>
         <tr>

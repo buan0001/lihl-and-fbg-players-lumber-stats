@@ -1,5 +1,6 @@
 import Listrenderer from "./Listrenderer.js";
 import Itemrenderer from "./Itemrenderer.js";
+import { startChart, updateChart, toggleChart } from "./Chart.js";
 
 window.addEventListener("load", start);
 
@@ -15,69 +16,28 @@ async function start(params) {
   const players = await getStats(document.querySelector("#entrySelect").value);
 
   playerlist = new Listrenderer("#playerStats", players, Itemrenderer);
-  startChart();
-  doTheThings();
+  startChart(playerlist);
+  updateListView();
 
   addEventListeners();
-  updateChart();
 }
 
-let chart;
-function startChart(params) {
-  const testList = [...playerlist.list];
-  testList.sort((a, b) => b.ratingRank - a.ratingRank);
-  const yValues = testList.map((player) => {
-    return player.rating;
-  });
-  const xValues = testList.map((player) => {
-    return player.ratingRank;
-  });
 
-  chart = new Chart("myChart", {
-    type: "line",
-    data: {
-      labels: xValues,
-      datasets: [
-        {
-          // fill: false,
-          // lineTension: 0,
-          backgroundColor: "rgba(0,0,255,0.2)",
-          borderColor: "rgba(50,50,50,0.1)",
-          data: yValues,
-        },
-      ],
-    },
-    options: {
-      legend: { display: false },
-    },
-  });
-}
-
-function updateChart(params) {
-  const testList = [...playerlist.list];
-  testList.sort((a, b) => b.ratingRank - a.ratingRank);
-  const yValues = testList.map((player) => {
-    return player.rating;
-  });
-  const xValues = testList.map((player) => {
-    return player.ratingRank;
-  });
-  chart.data.datasets[0].data = yValues;
-  chart.data.labels = xValues;
-  chart.update();
-}
 
 function addEventListeners() {
+  document.querySelector("#graph-btn").addEventListener("click",toggleChart)
   document.querySelector("#entrySelect").addEventListener("change", changeEntry);
 
   document.querySelector("#detail-box").addEventListener("change", () => playerlist.render());
 
   document.querySelector("#search").addEventListener("keyup", (event) => {
     searchValue = event.target.value;
-    doTheThings();
+    updateListView();
   });
   document.querySelectorAll("img").forEach((image) => image.addEventListener("click", changeSortAndArrows));
 }
+
+
 
 async function getStats(fileDate) {
   console.log(fileDate);
@@ -89,11 +49,11 @@ async function getStats(fileDate) {
 async function changeEntry(event) {
   const newStats = await getStats(event.target.value);
   playerlist.list = newStats;
-  doTheThings();
-  updateChart();
+  updateListView();
+  updateChart(playerlist);
 }
 
-function doTheThings() {
+function updateListView() {
   console.log("sort by", sortBy);
   playerlist.search(searchValue);
   playerlist.sort(sortBy);
@@ -127,5 +87,5 @@ function changeSortAndArrows(event) {
   }
 
   document.querySelectorAll("img").forEach((image) => image.addEventListener("click", changeSortAndArrows));
-  doTheThings();
+  updateListView();
 }
