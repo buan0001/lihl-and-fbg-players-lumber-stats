@@ -42,6 +42,7 @@ async function getJSONFromWC3Stats(dataToFetch) {
 
 async function newStats(fileName, season) {
   const ladder = "LIHL";
+  // const limit = 2;
   const limit = 100;
   const listOfPlayersThatSeason = await getJSONFromWC3Stats(`https://api.wc3stats.com/leaderboard&map=Legion%20TD&ladder=${ladder}&season=Season%20${season}&limit=${limit}`);
   const playersAndTheirLumber = [];
@@ -69,12 +70,25 @@ async function newStats(fileName, season) {
 
       if (toJSON2.body.types.range.roundLumber14 !== undefined) {
         const statStart = toJSON2.body.types.range;
-
+        let averageLumber = 0;
+        let roundsWithStats = 0;
+        for (let i = 1; i < 17; i++) {
+          // console.log(statStart["roundLumber" + i].average.value);
+          if (statStart["roundLumber" + i]?.average?.value !== undefined) {
+            averageLumber += statStart["roundLumber" + i].average.value;
+            roundsWithStats++;
+          } else {
+            console.log(`THIS AFK TKER == ${name} == DIDN'T EVEN PLAY A GAME TO LVL ${i}`);
+          }
+        }
+        averageLumber = averageLumber / roundsWithStats;
+        console.log("AVERAGE LUMBER:", averageLumber);
         playersAndTheirLumber.push({
           rating: player.rating,
           name: name,
           games: statStart.stayPercent.cardinality,
           winrate: Number(((toJSON1.body.wins / statStart.stayPercent.cardinality) * 100).toFixed(2)),
+          averageLumber: averageLumber,
           lumberAt7: statStart.roundLumber7.average.value,
           lumberAt10: statStart.roundLumber10.average.value,
           lumberAt14: statStart.roundLumber14.average.value,
