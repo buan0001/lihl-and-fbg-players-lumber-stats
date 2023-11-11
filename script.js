@@ -53,10 +53,10 @@ async function changeEntry(event) {
   updateChart(playerlist);
 }
 
-function updateListView() {
+function updateListView(reverseList = false) {
   console.log("sort by", sortBy);
   playerlist.search(searchValue);
-  playerlist.sort(sortBy);
+  playerlist.sort(sortBy, reverseList);
   playerlist.render();
 }
 
@@ -87,5 +87,5 @@ function changeSortAndArrows(event) {
   }
 
   document.querySelectorAll("img").forEach((image) => image.addEventListener("click", changeSortAndArrows));
-  updateListView();
+  updateListView(true);
 }

@@ -11,20 +11,17 @@ export default class Itemrenderer {
       html += `<td >${player.rating}</td>
         <td >${player.winrate}%</td>
         <td >${player.games}</td>
-        <td >${player.lumberAt7.toFixed(0)}</td>
-        <td >${player.lumberAt10.toFixed(0)}</td>
-        <td >${player.lumberAt14.toFixed(0)}</td>
+        <td >${player.averageLumber.toFixed(0)}</td>
          </tr>`;
     } else {
-      html +=
-      `<td style="background-color:${player.ratingColor}">${player.rating}</td>
-        <td style="background-color:${player.winrateColor}">${player.winrate}%</td>
-        <td style="background-color:${player.gamesColor}">${player.games}</td>
-        <td style="background-color:${player.lumberAt7Color}">${player.lumberAt7.toFixed(0)} <span class="inLineRank">(${player.lumberAt7Rank})</span></td>
-        <td style="background-color:${player.lumberAt10Color}">${player.lumberAt10.toFixed(0)} <span class="inLineRank">(${player.lumberAt10Rank})</span></td>
-        <td style="background-color:${player.lumberAt14Color}">${player.lumberAt14.toFixed(0)} <span class="inLineRank">(${player.lumberAt14Rank})</span></td>
+      html += `<td style="background-color:${player.ratingColor}">${player.rating} <span class="inLineRank">(${player.ratingRank})</span></td>
+        <td style="background-color:${player.winrateColor}">${player.winrate}% <span class="inLineRank">(${player.winrateRank})</span></td>
+        <td style="background-color:${player.gamesColor}">${player.games}<span class="inLineRank">(${player.gamesRank})</span></td>
+        <td style="background-color:${player.averageLumberColor}">${player.averageLumber.toFixed(0)} <span class="inLineRank">(${player.averageLumberRank})</span></td>
         </tr>`;
     }
+    // <td style="background-color:${player.lumberAt10Color}">${player.lumberAt10.toFixed(0)} <span class="inLineRank">(${player.lumberAt10Rank})</span></td>
+    // <td style="background-color:${player.lumberAt14Color}">${player.lumberAt14.toFixed(0)} <span class="inLineRank">(${player.lumberAt14Rank})</span></td>
 
     return html;
   }

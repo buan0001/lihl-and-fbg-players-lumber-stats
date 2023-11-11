@@ -1,39 +1,40 @@
 export default class Listrenderer {
-    #oldList
+  #oldList;
   constructor(id, list, Itemrenderer) {
     this.id = id;
     this.table = document.querySelector(`${id}`);
     this._list = this.#applyRank(list);
-    this.activeList = [... this._list];
-    this.#oldList = this._list
+    this.activeList = [...this._list];
+    this.#oldList = this._list;
     this.checkbox = document.querySelector("#detail-box");
     this.itemrenderer = new Itemrenderer();
   }
 
   render(listToShow = this.activeList) {
-    console.log("LIST",this.activeList);
-    this.clear()
+    console.log("LIST", this.activeList);
+    this.clear();
     listToShow.forEach((entry) => {
       const html = this.itemrenderer.render(entry, this.sortParam, this.checkbox.checked);
       this.table.insertAdjacentHTML("beforeend", html);
     });
   }
 
-  set list(newList){
-    this._list = this.#applyRank(newList)
-    this.activeList = [...this._list]
+  set list(newList) {
+    this._list = this.#applyRank(newList);
+    this.activeList = [...this._list];
   }
 
-  get list(){
-    return this._list
+  get list() {
+    return this._list;
   }
 
-  clear(){
-    this.table.innerHTML = ""
+  clear() {
+    this.table.innerHTML = "";
   }
 
   #applyRank(listToRank = this.activeList) {
-    const checkArray = ["games", "lumberAt10", "lumberAt14", "lumberAt7", "rating", "winrate"];
+    const checkArray = ["games", "averageLumber", "rating", "winrate"];
+    // const checkArray = ["games", "lumberAt10", "lumberAt14", "lumberAt7", "rating", "winrate"];
     const lengthOfList = listToRank.length;
     const halfWayPoint = lengthOfList / 2;
 
@@ -59,26 +60,27 @@ export default class Listrenderer {
     return listToRank;
   }
 
-  sort(sortParam) {
+  sort(sortParam, reverseList) {
     if (!this.sortParam || sortParam !== this.sortParam) {
       this.sortParam = sortParam;
-      this.sortDir = true
-    } else if (sortParam === this.sortParam && this._list === this.#oldList) {
-      this.sortDir = !this.sortDir
+      this.sortDir = true;
     }
-    else if (this.#oldList !== this._list){
-        this.#oldList = this._list
-    }
-    // console.log("this.sortParam",this.sortParam);
-    // console.log("this.sortDir", this.sortDir);
-    this.activeList.sort((a, b) => b[sortParam+"Rank"] - a[sortParam+"Rank"]);
+    if (reverseList){this.sortDir = !this.sortDir;}
+    // else if (sortParam === this.sortParam && this._list === this.#oldList) {
+    //   this.sortDir = !this.sortDir;
+    // } else if (this.#oldList !== this._list) {
+    //   this.#oldList = this._list;
+    // }
+    console.log("this.sortParam",this.sortParam);
+    console.log("this.sortDir", this.sortDir);
+    this.activeList.sort((a, b) => b[sortParam + "Rank"] - a[sortParam + "Rank"]);
     if (this.sortDir) {
       this.activeList.reverse();
     }
   }
 
-  search(searchParam){
-    this.activeList = this._list.filter(player => player.name.toLowerCase().includes(searchParam.toLowerCase()))
+  search(searchParam) {
+    this.activeList = this._list.filter((player) => player.name.toLowerCase().includes(searchParam.toLowerCase()));
     // console.log("SEARCH PRAM",searchParam);
     // console.log("searched list", this.activeList);
     // return activeList
