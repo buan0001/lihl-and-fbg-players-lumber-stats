@@ -65,13 +65,16 @@ export default class Listrenderer {
       this.sortParam = sortParam;
       this.sortDir = true;
     }
-    if (reverseList){this.sortDir = !this.sortDir;}
+    else if (reverseList) {
+      this.sortDir = !this.sortDir;
+    }
+    console.log("reverse list?", reverseList);
     // else if (sortParam === this.sortParam && this._list === this.#oldList) {
     //   this.sortDir = !this.sortDir;
     // } else if (this.#oldList !== this._list) {
     //   this.#oldList = this._list;
     // }
-    console.log("this.sortParam",this.sortParam);
+    console.log("this.sortParam", this.sortParam);
     console.log("this.sortDir", this.sortDir);
     this.activeList.sort((a, b) => b[sortParam + "Rank"] - a[sortParam + "Rank"]);
     if (this.sortDir) {
