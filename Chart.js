@@ -1,44 +1,71 @@
-let chart;
+let charts = [eloChart, lumberChart];
 function startChart(listRenderer) {
   const pList = [...listRenderer.list];
-  pList.sort((a, b) => b.ratingRank - a.ratingRank);
-  const yValues = pList.map((player) => {
-    return player.rating;
-  });
-  const xValues = pList.map((player) => {
-    return player.ratingRank;
-  });
 
-  chart = new Chart("myChart", {
-    type: "line",
-    data: {
-      labels: xValues,
-      datasets: [
-        {
-          backgroundColor: "rgba(0,0,255,0.2)",
-          borderColor: "rgba(50,50,50,0.1)",
-          data: yValues,
+  for (let i = 0; i < 2; i++) {
+    let check = i == 0 ? "rating" : "lumberAt7";
+    const values = chartArrayMaker(pList, check);
+    let value = i == 0 ? "Rating" : "Lumber";
+    let domCanvas = i == 0 ? "eloChart" : "lumberChart";
+    charts[i] = new Chart(domCanvas, {
+      type: "line",
+      data: {
+        labels: values.xValues,
+        datasets: [
+          {
+            backgroundColor: "rgba(0,0,255,0.2)",
+            borderColor: "rgba(50,50,50,0.1)",
+            data: values.yValues,
+          },
+        ],
+      },
+      options: {
+        scales: {
+          yAxes: [
+            {
+              scaleLabel: {
+                display: true,
+                labelString: value,
+              },
+            },
+          ],
+          xAxes: [
+            {
+              scaleLabel: {
+                display: true,
+                labelString: "Rank",
+              },
+            },
+          ],
         },
-      ],
-    },
-    options: {
-      legend: { display: false },
-    },
-  });
+        title: { text: domCanvas == "eloChart" ? "Elo distribution" : "Lumber distribution", display: true },
+        legend: { display: false, labels: { color: "rgb(255, 99, 132)" } },
+      },
+    });
+  }
 }
 
 function updateChart(listRenderer) {
   const newList = [...listRenderer.list];
-  newList.sort((a, b) => b.ratingRank - a.ratingRank);
+  for (let i = 0; i < 2; i++) {
+    let check = i == 0 ? "rating" : "lumberAt7";
+    const values = chartArrayMaker(newList, check);
+    charts[i].data.datasets[0].data = values.yValues;
+    charts[i].data.labels = values.xValues;
+    charts[i].update();
+  }
+}
+
+function chartArrayMaker(newList, check) {
+  newList.sort((a, b) => b[check + "Rank"] - a[check + "Rank"]);
   const yValues = newList.map((player) => {
-    return player.rating;
+    return player[check];
   });
   const xValues = newList.map((player) => {
-    return player.ratingRank;
+    return player[check + "Rank"];
   });
-  chart.data.datasets[0].data = yValues;
-  chart.data.labels = xValues;
-  chart.update();
+
+  return { yValues, xValues };
 }
 
 function toggleChart(event) {
