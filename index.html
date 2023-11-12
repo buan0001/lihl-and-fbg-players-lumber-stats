@@ -5,33 +5,51 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Lumber stats for FBG and LIHL</title>
     <link rel="stylesheet" href="style.css" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.js"></script>
   </head>
   <body>
     <header>
       <div id="title-grid">
-      <h1>Lumber stats for LIHL players</h1>
+        <h1>Lumber stats for LIHL players</h1>
       </div>
-      <div  id="header-grid">
+      <div id="header-grid">
+        <input type="text" name="search" id="search" autocomplete="off" placeholder="Search player name" />
+        <div>
+        <label for="threshold">Games played</label>
+        <select name="threshold" id="gameThresh">
+          <option value="0">Any</option>
+          <option value="20">20</option>
+          <option value="50">50</option>
+          <option value="100">100</option>
+        </select></div>
         <select name="" id="entrySelect">
-          <option value="06-08-2023-16">Season 16 - 06-08-2023</option>
-          <option selected value="12-09-2023-17">Season 17 - 12-09-2023</option>
+          <option value="2023-08-06-16">Season 16 - Aug. 6th 2023</option>
+          <!-- <option value="2023-09-10-17">Season 17 - 2023-09-12</option> -->
+          <option selected value="2023-11-10-17">Season 17 - Nov. 11th 2023</option>
         </select>
-      <input type="text" name="search" id="search" autocomplete="off" placeholder="Search player name">
-      <label for="box">Toggle colors</label>
+        <button id="graph-btn">Toggle graphs</button>
+        <!-- <button id="detail-box">Toggle colors</button> -->
+        <label for="box">Hide fluff</label>
       <input type="checkbox" id="detail-box" name="box"></input>
       </div>
     </header>
+    <div id="canvas-container">
+      <canvas id="lumberChart" style="width: 100%; max-width: 600px"></canvas>
+      <canvas id="eloChart" style="width: 100%; max-width: 600px"></canvas>
+      <canvas id="eloLumberChart" style="width: 100%; max-width: 600px"></canvas>
+    </div>
     <table>
       <thead>
         <tr>
           <th>Rank</th>
           <th>Name</th>
           <th>Rating<img src="images/arrowDown.png" id="rating" /></th>
+          <th>Win rate<img src="images/arrowBoth.png" id="winrate" /></th>
           <th>Games played<img src="images/arrowBoth.png" id="games" /></th>
-          <th>AVERAGE LUMBER <img src="images/arrowBoth.png" id="average" /></th>
-          <th>Lumber at 7<img src="images/arrowBoth.png" id="lumberAt7" /></th>
+          <th>Lumber average<img src="images/arrowBoth.png" id="averageLumber" /></th>
+          <!-- <th>Lumber at 7<img src="images/arrowBoth.png" id="lumberAt7" /></th>
           <th>Lumber at 10<img src="images/arrowBoth.png" id="lumberAt10" /></th>
-          <th>Lumber at 14<img src="images/arrowBoth.png" id="lumberAt14" /></th>
+          <th>Lumber at 14<img src="images/arrowBoth.png" id="lumberAt14" /></th> -->
         </tr>
       </thead>
       <tbody id="playerStats"></tbody>
@@ -41,5 +59,5 @@
       <a href="https://www.freepik.com/icon/arrow_10561363#position=95&page=3&term=sort+arrow&fromView=search">Icon by amoghdesign</a>
     </div>
   </body>
-  <script src="script.js"></script>
+  <script src="script.js" type="module"></script>
 </html>
