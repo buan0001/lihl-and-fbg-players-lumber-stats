@@ -10,7 +10,7 @@ export default class Listrenderer {
     this.itemrenderer = new Itemrenderer();
   }
 
-  render(listToShow = this.activeList) {
+  render(listToShow = this.searchedList) {
     console.log("LIST", this.activeList);
     this.clear();
     listToShow.forEach((entry) => {
@@ -64,8 +64,7 @@ export default class Listrenderer {
     if (!this.sortParam || sortParam !== this.sortParam) {
       this.sortParam = sortParam;
       this.sortDir = true;
-    }
-    else if (reverseList) {
+    } else if (reverseList) {
       this.sortDir = !this.sortDir;
     }
     console.log("reverse list?", reverseList);
@@ -76,16 +75,20 @@ export default class Listrenderer {
     // }
     console.log("this.sortParam", this.sortParam);
     console.log("this.sortDir", this.sortDir);
-    this.activeList.sort((a, b) => b[sortParam + "Rank"] - a[sortParam + "Rank"]);
+    this.searchedList.sort((a, b) => b[sortParam + "Rank"] - a[sortParam + "Rank"]);
     if (this.sortDir) {
-      this.activeList.reverse();
+      this.searchedList.reverse();
     }
   }
 
   search(searchParam) {
-    this.activeList = this._list.filter((player) => player.name.toLowerCase().includes(searchParam.toLowerCase()));
+    this.searchedList = this.filteredList.filter((player) => player.name.toLowerCase().includes(searchParam.toLowerCase()));
     // console.log("SEARCH PRAM",searchParam);
     // console.log("searched list", this.activeList);
     // return activeList
+  }
+
+  filter(value) {
+    this.filteredList = this.#applyRank(this.activeList.filter((player) => player.games > value));
   }
 }

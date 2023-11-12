@@ -13,12 +13,20 @@
         <h1>Lumber stats for LIHL players</h1>
       </div>
       <div id="header-grid">
+        <input type="text" name="search" id="search" autocomplete="off" placeholder="Search player name" />
+        <div>
+        <label for="threshold">Games played</label>
+        <select name="threshold" id="gameThresh">
+          <option value="0">Any</option>
+          <option value="20">20</option>
+          <option value="50">50</option>
+          <option value="100">100</option>
+        </select></div>
         <select name="" id="entrySelect">
           <option value="2023-08-06-16">Season 16 - Aug. 6th 2023</option>
           <!-- <option value="2023-09-10-17">Season 17 - 2023-09-12</option> -->
           <option selected value="2023-11-10-17">Season 17 - Nov. 11th 2023</option>
         </select>
-        <input type="text" name="search" id="search" autocomplete="off" placeholder="Search player name" />
         <button id="graph-btn">Toggle graphs</button>
         <!-- <button id="detail-box">Toggle colors</button> -->
         <label for="box">Hide fluff</label>

@@ -27,6 +27,7 @@ async function start(params) {
 function addEventListeners() {
   document.querySelector("#graph-btn").addEventListener("click",toggleChart)
   document.querySelector("#entrySelect").addEventListener("change", changeEntry);
+  document.querySelector("#gameThresh").addEventListener("change",() =>updateListView())
 
   document.querySelector("#detail-box").addEventListener("change", () => playerlist.render());
 
@@ -55,9 +56,12 @@ async function changeEntry(event) {
 
 function updateListView(reverseList = false) {
   console.log("sort by", sortBy);
+  playerlist.filter(document.querySelector("#gameThresh").value);
   playerlist.search(searchValue);
+  // console.log(playerlist.activeList);
   playerlist.sort(sortBy, reverseList);
   playerlist.render();
+  updateChart(playerlist);
 }
 
 function changeSortAndArrows(event) {
